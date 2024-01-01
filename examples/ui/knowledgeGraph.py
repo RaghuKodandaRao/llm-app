@@ -74,7 +74,7 @@ def getEntities(txtSentence):
 # Returns   - returns relation label of 2 entities from the input sentence
 #######-------------------------------------#######
 def getRelation(txtSentence):
-     print("getRelation sentence ->>", txtSentence)
+     #print("getRelation sentence ->>", txtSentence)
      objDocument = nlp(txtSentence)
      matcher = Matcher(nlp.vocab)
 
@@ -89,7 +89,7 @@ def getRelation(txtSentence):
      k = len(matches) - 1
 
      span = objDocument[matches[k][1]:matches[k][2]] 
-     print("getRelation returning ->>", span.text)
+     #print("getRelation returning ->>", span.text)
      return(span.text)
 
 #######-------------------------------------#######
@@ -99,7 +99,7 @@ def getRelation(txtSentence):
 #######-------------------------------------#######
 def showKwGraph(gpText):
      graphText=gpText
-     #print("Sentences are ",tokenize.sent_tokenize(graphText))
+     print("Sentences are ",tokenize.sent_tokenize(graphText))
      pd.set_option('display.max_colwidth', 150)
 
      #A text may have many sentences, extract each sentence & add to data frame
@@ -119,7 +119,7 @@ def showKwGraph(gpText):
      # extract target entity from entity pairs
      arrTargetEntities = [i[1] for i in arrEntityPairs]
      kwGraph_df = pd.DataFrame({'source':arrSrcEntities, 'target':arrTargetEntities, 'edge':arrRelations})
-     
+     print("Graph containing \n ",kwGraph_df)
      #Visualize as graph
      graph = graphviz.Digraph()
      #using entities from DF for graph
