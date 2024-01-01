@@ -1,4 +1,4 @@
-<b><h1>Visualize Pathway LLM Generative AI responses as a Knowegde Graph</h1></b>
+<b><h1>Visualize Pathway LLM Generative AI responses as a Knowlegde Graph</h1></b>
 
 A Knowlegde Graph is a visual representation in the form of Graph consisting of Entities like Names, organizations etc formulated as nodes. These nodes are connected with edges having labels, that often depict information or ralation between nodes like Action or assocaition words.  
 
