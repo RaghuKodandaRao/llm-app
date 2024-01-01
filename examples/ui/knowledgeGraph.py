@@ -128,17 +128,4 @@ def showKwGraph(gpText):
            graph.edge(row['source'], row['target'], label=row['edge'], color="blue", arrowhead="none",arrowType="none") 
            
      st.graphviz_chart(graph)
-    
-    #Works in commandline , but not interactive have commented
-    # create a directed-graph from a dataframe
-    # G=nx.from_pandas_edgelist(kwGraph_df, "source", "target", 
-    #                      edge_attr=True, create_using=nx.MultiDiGraph())
-
-    #print("mltb interactive?",mlt.is_interactive())
-     #plt.figure(figsize=(8,8))
-     #pos = nx.spring_layout(G)
-     #nx.draw(G, with_labels=True, node_color='red', edge_cmap=plt.cm.Blues, pos = pos)
-     #plt.show() 
-     #save image to view during debugging
-     #plt.savefig("myKwGraph.png")
           
