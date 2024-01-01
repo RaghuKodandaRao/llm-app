@@ -1,6 +1,6 @@
 import spacy
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import numpy as np 
+import pandas as pd 
 import os
 import re
 import bs4
@@ -14,132 +14,131 @@ import streamlit as st
 from spacy import displacy
 from spacy.matcher import Matcher 
 from spacy.tokens import Span 
-from tqdm import tqdm
 from nltk import tokenize
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('punkt')
 
-import matplotlib as mlt
-plt.ion()
+#######-------------------------------------#######
+# Method    - getEntities 
+# Input     - One Sentence text
+# Returns   - 2 entities as FirstEntity and SecondEntity extracted from the input sentence
+#######-------------------------------------#######
+def getEntities(txtSentence):
+     ## Firstchunk 
+     FirstEntity = ""
+     SecondEntity = ""
 
-def get_entities(sent):
-     ## chunk 1
-     ent1 = ""
-     ent2 = ""
-
-     prv_tok_dep = ""  # dependency tag of previous token in the sentence
-     prv_tok_text = ""  # previous token in the sentence
+     PrevTokenDependency = "" 
+     PrevTokenText = ""  
 
      prefix = ""
      modifier = ""
                                     
-     for tok in nlp(sent):
-           ## chunk 2
-           # if token is a punctuation mark then move on to the next token
-           if tok.dep_ != "punct":
-           # check: token is a compound word or not
-               if tok.dep_ == "compound":
-                    prefix = tok.text
-                    # if the previous word was also a 'compound' then add the current word to it
-                    if prv_tok_dep == "compound":
-                          prefix = prv_tok_text + " " + tok.text
+     for txtToken in nlp(txtSentence):
+           # Skip punctutaion tokens
+           if txtToken.dep_ != "punct":
+           # is this token a compound word?
+               if txtToken.dep_ == "compound":
+                    prefix = txtToken.text
+                    #based on previous word being a 'compound' then add the current word to it
+                    if PrevTokenDependency == "compound":
+                          prefix = PrevTokenText + " " + txtToken.text
 
            # check: token is a modifier or not
-           if tok.dep_.endswith("mod") == True:
-                   modifier = tok.text
-                   # if the previous word was also a 'compound' then add the current word to it
-                   if prv_tok_dep == "compound":
-                        modifier = prv_tok_text + " " + tok.text
+           if txtToken.dep_.endswith("mod") == True:
+                   modifier = txtToken.text
+                   #based on previous word being a 'compound' then add the current word to it
+                   if PrevTokenDependency == "compound":
+                        modifier = PrevTokenText + " " + txtToken.text
            
-           ## chunk 3
-           if tok.dep_.find("subj") == True:
-                ent1 = modifier + " " + prefix + " " + tok.text
+           if txtToken.dep_.find("subj") == True:
+                FirstEntity = modifier + " " + prefix + " " + txtToken.text
                 prefix = ""
                 modifier = ""
-                prv_tok_dep = ""
-                prv_tok_text = ""
+                PrevTokenDependency = ""
+                PrevTokenText = ""
 
-                ## chunk 4
-           if tok.dep_.find("obj") == True:
-                ent2 = modifier + " " + prefix + " " + tok.text
-                                                                                                                               # chunk 5  
-                                                                                                                               # update variables
-           prv_tok_dep = tok.dep_
-           prv_tok_text = tok.text
+           if txtToken.dep_.find("obj") == True:
+                SecondEntity = modifier + " " + prefix + " " + txtToken.text
+           
+           # update variables
+           PrevTokenDependency = txtToken.dep_
+           PrevTokenText = txtToken.text
            ############################################################
+     return [FirstEntity.strip(), SecondEntity.strip()]
 
-     return [ent1.strip(), ent2.strip()]
-
-def get_relation(sent):
-
-     doc = nlp(sent)
-     # Matcher class object 
+#######-------------------------------------#######
+# Method    - getRelation 
+# Input     - One Sentence text
+# Returns   - returns relation label of 2 entities from the input sentence
+#######-------------------------------------#######
+def getRelation(txtSentence):
+     print("getRelation sentence ->>", txtSentence)
+     objDocument = nlp(txtSentence)
      matcher = Matcher(nlp.vocab)
 
-     #define the pattern 
+     #pattern definition for graph
      pattern = [[{'DEP':'ROOT'},
           {'DEP':'prep','OP':"?"},
           {'DEP':'agent','OP':"?"},  
           {'POS':'ADJ','OP':"?"}] ]
 
-     #matcher.add("matching_1", None, pattern) 
      matcher.add("matching_1",pattern) 
-
-     matches = matcher(doc)
+     matches = matcher(objDocument)
      k = len(matches) - 1
 
-     span = doc[matches[k][1]:matches[k][2]] 
-
+     span = objDocument[matches[k][1]:matches[k][2]] 
+     print("getRelation returning ->>", span.text)
      return(span.text)
 
+#######-------------------------------------#######
+# Method    - showKwGraph 
+# Input     - Graph text
+# Returns   - Prints Knowledge graph of Entities and Relations
+#######-------------------------------------#######
 def showKwGraph(gpText):
      graphText=gpText
-     #graphText = "Sumedh is elder son of Raghu and Parimala. Sumedh's youger brother is Suchith. Sumedh and Suchith live together with Ramachandra, Shakunthala grandparents along with Raghu and Parimala. SUchith plays with Shakunthala. while Sumedh reads books these days"
+     #print("Sentences are ",tokenize.sent_tokenize(graphText))
+     pd.set_option('display.max_colwidth', 150)
 
-     print("Sentences are ",tokenize.sent_tokenize(graphText))
-
-     doc = nlp(graphText)
-
-     for tok in doc:
-          print(tok.text, "...", tok.dep_)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-     pd.set_option('display.max_colwidth', 200)
-
-     candidate_sentences = pd.DataFrame({'sentence': tokenize.sent_tokenize(graphText)})
-
-     candidate_sentences.shape
-     candidate_sentences
-
-     entity_pairs = []
-     for i in tqdm(candidate_sentences["sentence"]):
-          entity_pairs.append(get_entities(i))
-     entity_pairs[10:20]
-
-     relations = [get_relation(i) for i in tqdm(candidate_sentences['sentence'])]
-     pd.Series(relations).value_counts()[:50]
-
-
-# extract subject
-     source = [i[0] for i in entity_pairs]
-# extract object
-     target = [i[1] for i in entity_pairs]
-     kg_df = pd.DataFrame({'source':source, 'target':target, 'edge':relations})
-     kg_df
-
+     #A text may have many sentences, extract each sentence & add to data frame
+     AllSentences = pd.DataFrame({'sentence': tokenize.sent_tokenize(graphText)})
+     AllSentences.shape
+     
+     #For each sentence extract entity pairs
+     arrEntityPairs = []
+     for i in AllSentences["sentence"]:
+          arrEntityPairs.append(getEntities(i))
+     
+     #Extract relation with entities
+     arrRelations = [getRelation(i) for i in AllSentences['sentence']]
+        
+     # extract Source entity from entity pairs
+     arrSrcEntities = [i[0] for i in arrEntityPairs]
+     # extract target entity from entity pairs
+     arrTargetEntities = [i[1] for i in arrEntityPairs]
+     kwGraph_df = pd.DataFrame({'source':arrSrcEntities, 'target':arrTargetEntities, 'edge':arrRelations})
+     
+     #Visualize as graph
      graph = graphviz.Digraph()
-     for j in entity_pairs:
-           graph.edge(j[0],j[1],arrowhead="none",arrowType="none")
+     #using entities from DF for graph
+     for index, row in kwGraph_df.iterrows():
+           print("kwGraph_df values --",row['source'], row['target'], row['edge'])
+           graph.edge(row['source'], row['target'], label=row['edge'], color="blue", arrowhead="none",arrowType="none") 
+           
      st.graphviz_chart(graph)
+    
+    #Works in commandline , but not interactive have commented
+    # create a directed-graph from a dataframe
+    # G=nx.from_pandas_edgelist(kwGraph_df, "source", "target", 
+    #                      edge_attr=True, create_using=nx.MultiDiGraph())
 
-# create a directed-graph from a dataframe
-     G=nx.from_pandas_edgelist(kg_df, "source", "target", 
-                          edge_attr=True, create_using=nx.MultiDiGraph())
-
-     print("mltb interactive?",mlt.is_interactive())
-     plt.figure(figsize=(8,8))
-     pos = nx.spring_layout(G)
-     nx.draw(G, with_labels=True, node_color='red', edge_cmap=plt.cm.Blues, pos = pos)
+    #print("mltb interactive?",mlt.is_interactive())
+     #plt.figure(figsize=(8,8))
+     #pos = nx.spring_layout(G)
+     #nx.draw(G, with_labels=True, node_color='red', edge_cmap=plt.cm.Blues, pos = pos)
      #plt.show() 
-     plt.savefig("myKwGraph.png")
-     #return(graph)     
+     #save image to view during debugging
+     #plt.savefig("myKwGraph.png")
+          
