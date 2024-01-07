@@ -231,6 +231,11 @@ Simply add `llm-app` to your project's dependencies and copy one of the [example
 
 * [Dropbox Data Observability](https://github.com/pathway-labs/dropbox-ai-chat) - See how to get started with chatting with your Dropbox and having data observability. 
 
+## Extension to UI
+Continuously update & Display Knowledge Graphs based on the same document repository. The README file for the specific extension is available at  https://github.com/RaghuKodandaRao/llm-app/blob/main/examples/README.md
+
+
+
 ## Troubleshooting
 
 Please check out our [Q&A](https://github.com/pathwaycom/llm-app/discussions/categories/q-a) to get solutions for common installation problems and other issues.
