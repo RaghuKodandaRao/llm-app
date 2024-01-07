@@ -4,6 +4,14 @@ A Knowlegde Graph is a visual representation in the form of Graph consisting of 
 
 In this exercise I have extended the Pathway LLM application to post the response text recived from the LLM to generate the Knwoedge graph. I promted the LLM app to "tell me something", "tell me a story", etc to generate some text, the output of the same are captured as below 
 
+Two modules named <b><i>KnowledgeGraph</b></i> and <b><i>EnityExtraction</b></i> are newly intorduced towards Knowedge Graph extension
+1. <i>EnityExtraction</i> - This has two Methods <br>
+    a. <i>getEntities(SentenceText)</i> to extract Entities from a sentence.<br>
+    b. <i>getRelation(SentenceText)</i> to extract Action/Association between the entities of a sentence.<br>
+2. <i>KnowledgeGraph</i> has method <i>showKwGraph(SentencesText)</i> . It utilizes <i>EnityExtraction.getEntities(SentenceText)</i> to extract Entities &  <i>EnityExtraction.getRelation(SentenceText)</i> to extract entities & Labels from all the Sentences of input text. It then Displays the Knowedge Graph using this information. 
+
+Further server.py is extended to invoke KnowledgeGraph.showKwGraph by passing the LLM response text. A "Hide Graph" enables user to hide the Graph as needed.
+
 <h3>Demo Video :    
 ▶️ [Demo video](https://youtu.be/ZDSu2OsVqF0)
 </h3>
@@ -24,3 +32,5 @@ The UI as well is extended to show a "Hide Graph" button to hide the graph, the 
 <h3>Image: Sample Screenshot 2 with "Hide Graph" clicked</h3>
 
 ![Hide Button in action](https://github.com/RaghuKodandaRao/llm-app/blob/main/.github/assets/KnowledgeGraphDemo2_Onclick_HideGraphButton.PNG)
+
+
