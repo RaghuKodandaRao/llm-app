@@ -16,6 +16,12 @@ Further server.py is extended to invoke KnowledgeGraph.showKwGraph by passing th
 ▶️ [Demo video](https://youtu.be/ZDSu2OsVqF0)
 </h3>
 
+<h3> Application of Knowlegde Graph generation on Pathway API</h3>
+
+As an usecase, the enhancement of using Knowledge Graph has been applied on Pathway APIs. The approach taken, challengea faced and resolution have been documented in
+https://github.com/RaghuKodandaRao/llm-app/blob/main/.github/assets/Realtime%20LLM%20JSON%20Documents%20Embedding%20with%20Pathway%20API%20Information.docx
+
+
 <h3>Image: Sample Screenshot 1 </h3>
 
 ![Sample Screenshot 1](https://github.com/RaghuKodandaRao/llm-app/blob/main/.github/assets/KnowledgeGraphDemo1.PNG)
